@@ -1,27 +1,28 @@
-syntax = "proto3";
+  syntax = "proto3";
 
-// Definimos el paquete
-package grpcChallenge;
+  // Definimos el paquete
+  package org.challenge;
 
-// Especificamos las opciones del plugin gRPC en diferentes lenguajes
-option java_package = "com.example.grpcChallenge";
-option java_outer_classname = "GrpcChallengeProto";
 
-// Servicio gRPC
-service Greeter {
-  // Método simple de gRPC para enviar un saludo
-  rpc SayHello (HelloRequest) returns (HelloReply);
+  // Especificamos las opciones del plugin gRPC en diferentes lenguajes
+  option java_package = "org.challenge";
+  option java_outer_classname = "GrpcChallengeProto";
 
-  // Método para enviar múltiples saludos
-  rpc SayHelloManyTimes (HelloRequest) returns (stream HelloReply);
-}
+  // Servicio gRPC
+  service Greeter {
+    // Método simple de gRPC para enviar un saludo
+    rpc SayHello (HelloRequest) returns (HelloReply);
 
-// Definimos el mensaje de solicitud
-message HelloRequest {
-  string name = 1;
-}
+    // Método para enviar múltiples saludos
+    rpc SayHelloManyTimes (HelloRequest) returns (stream HelloReply);
+  }
 
-// Definimos el mensaje de respuesta
-message HelloReply {
-  string message = 1;
-}
+  // Definimos el mensaje de solicitud
+  message HelloRequest {
+    string name = 1;
+  }
+
+  // Definimos el mensaje de respuesta
+  message HelloReply {
+    string message = 1;
+  }
