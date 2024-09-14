@@ -22,7 +22,7 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>3.8.1</version>
+      <version>4.13.2</version>
       <scope>test</scope>
     </dependency>
     <!-- Dependencia de gRPC -->
@@ -85,6 +85,30 @@
             <goal>compile</goal>
             <goal>compile-custom</goal>
           </goals>
+        </execution>
+      </executions>
+    </plugin>
+    <plugin>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-shade-plugin</artifactId>
+    <version>3.2.4</version>
+    <executions>
+        <execution>
+            <phase>package</phase>
+            <goals>
+                <goal>shade</goal>
+            </goals>
+            <configuration>
+                <createDependencyReducedPom>false</createDependencyReducedPom>
+                <transformers>
+                    <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                        <mainClass>org.challenge.GRPCServer</mainClass>
+                    </transformer>
+                    <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                        <mainClass>org.challenge.GRPCclient</mainClass> <!-- Cambiar a GRPCclient si quieres ejecutar el cliente -->
+                    </transformer>
+                </transformers>
+            </configuration>
         </execution>
       </executions>
     </plugin>
