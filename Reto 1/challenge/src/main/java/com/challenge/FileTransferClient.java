@@ -6,6 +6,7 @@ import com.challenge.grpc.FileResponse;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 
+import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
 public class FileTransferClient {
@@ -33,7 +34,10 @@ public class FileTransferClient {
         System.out.println("Iniciando el cliente gRPC...");
         FileTransferClient client = new FileTransferClient("localhost", 50051);
         try {
-            client.transferFile("ejemplo.txt");
+            Scanner scanner = new Scanner(System.in);
+            System.out.println("Ingrese el nombre del archivo y el tipo de archivo a transferir:");
+            String fileName = scanner.next();
+            client.transferFile(fileName);
         } finally {
             client.shutdown();
         }

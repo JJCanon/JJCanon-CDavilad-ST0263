@@ -1,0 +1,6 @@
+java version 22.0.1
+maven version 3.9.9
+
+you must compile in windows terminal
+run server: mvn exec:java -Dexec.mainClass="com.challenge.Main"
+run client:

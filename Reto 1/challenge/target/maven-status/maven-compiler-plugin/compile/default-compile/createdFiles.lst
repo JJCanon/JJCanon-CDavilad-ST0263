@@ -2,6 +2,7 @@ com\challenge\grpc\FileTransferGrpc$FileTransferFileDescriptorSupplier.class
 com\challenge\grpc\FileTransferGrpc$FileTransferBlockingStub.class
 com\challenge\FileTransferClient.class
 com\challenge\grpc\FileTransferGrpc$FileTransferFutureStub.class
+com\challenge\FileTransferTracker.class
 com\challenge\grpc\FileTransferGrpc$2.class
 com\challenge\grpc\FileTransferGrpc$MethodHandlers.class
 com\challenge\FileTransferServer.class
