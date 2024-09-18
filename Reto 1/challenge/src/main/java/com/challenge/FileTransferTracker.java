@@ -20,27 +20,27 @@ public class FileTransferTracker extends FileTransferGrpc.FileTransferImplBase {
             JSONObject json = new JSONObject(content);
             // Obtener metadata del archivo
             if (json.has(fileName)) {
-                return json.getString(fileName);
+                return "Enviando direccion del archivo " + json.getString(fileName);
             } else {
-                return "Archivo no encontrado";
+                return "File not Found";
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return "Error leyendo el archivo de metadata JSON";
+            System.out.println("Error trying to read json file");
+            return "A Ocurrido un error, intente nuevamente";
         }
     }
 
     @Override
     public void transferFile(FileRequest request, StreamObserver<FileResponse> responseObserver) {
         String fileName = request.getFileName();
-        String message = "Enviando dirección del archivo " + fileName;
-        String dirFile = metadataFile(fileName); // Obtener metadata del archivo
+        String message = metadataFile(fileName); // Obtener metadata del archivo
         FileResponse response = FileResponse.newBuilder()
-                .setMessage(message + ". Dirección: " + dirFile) // Incluir la dirección en la respuesta
+                .setMessage(message) // Incluir la dirección en la respuesta
                 .build();
         responseObserver.onNext(response); // Enviar respuesta al cliente
         responseObserver.onCompleted();
-        System.out.println(message + ". Dirección: " + dirFile);
+        System.out.println(message);
     }
 
     public static void main(String[] args) {

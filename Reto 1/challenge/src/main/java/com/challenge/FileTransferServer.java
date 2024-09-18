@@ -23,7 +23,8 @@ public class FileTransferServer extends FileTransferGrpc.FileTransferImplBase {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return "Error trying to read json file";
+            System.out.println("Error trying to read json file");
+            return "A Ocurrido un error, intente nuevamente";
         }
     }
 
