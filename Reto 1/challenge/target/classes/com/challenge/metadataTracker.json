@@ -1,0 +1,21 @@
+{
+    "documento1.pdf": "192.168.1.10",
+    "imagen_foto.jpg": "10.0.0.5",
+    "presentacion.pptx": "172.16.254.3",
+    "archivo_datos.csv": "192.168.100.22",
+    "reporte_anual.docx": "10.10.10.8",
+    "video_entrevista.mp4": "172.16.0.45",
+    "planilla_gastos.xlsx": "192.168.0.30",
+    "guia_usuario.txt": "10.1.1.19",
+    "audio_podcast.mp3": "172.20.10.14",
+    "diagrama_flujo.png": "192.168.56.1",
+    "nuevodocumento1.pdf": "192.168.1.3",
+    "nuevodocumento2.pdf": "192.168.1.3",
+    "imagen_extra.jpg": "192.168.1.3",
+    "archivo_adicional.csv": "192.168.1.3",
+    "nuevo_video.mp4": "192.168.1.3",
+    "documento_extra.docx": "192.168.1.3",
+    "guia_nueva.txt": "192.168.1.3",
+    "audio_extra.mp3": "192.168.1.3",
+    "diagrama_nuevo.png": "192.168.1.3"
+}

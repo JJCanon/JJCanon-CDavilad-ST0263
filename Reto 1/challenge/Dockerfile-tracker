@@ -1,0 +1,20 @@
+FROM openjdk:22-jdk-slim
+
+# Crea el directorio de trabajo
+WORKDIR /app
+
+# Instala Maven
+RUN apt-get update && apt-get install -y maven
+
+# Copia el archivo pom.xml y descarga las dependencias
+COPY pom.xml ./
+RUN mvn dependency:go-offline
+
+# Copia el código fuente
+COPY src ./src
+
+# Compila el proyecto
+RUN mvn clean install
+
+# Ejecuta el tracker
+CMD ["mvn", "exec:java", "-Dexec.mainClass=com.challenge.FileTransferTracker"]
