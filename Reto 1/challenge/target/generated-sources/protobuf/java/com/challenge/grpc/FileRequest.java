@@ -17,6 +17,7 @@ private static final long serialVersionUID = 0L;
   }
   private FileRequest() {
     fileName_ = "";
+    clientIp_ = "";
   }
 
   @java.lang.Override
@@ -83,6 +84,45 @@ private static final long serialVersionUID = 0L;
     }
   }
 
+  public static final int CLIENT_IP_FIELD_NUMBER = 2;
+  @SuppressWarnings("serial")
+  private volatile java.lang.Object clientIp_ = "";
+  /**
+   * <code>string client_ip = 2;</code>
+   * @return The clientIp.
+   */
+  @java.lang.Override
+  public java.lang.String getClientIp() {
+    java.lang.Object ref = clientIp_;
+    if (ref instanceof java.lang.String) {
+      return (java.lang.String) ref;
+    } else {
+      com.google.protobuf.ByteString bs = 
+          (com.google.protobuf.ByteString) ref;
+      java.lang.String s = bs.toStringUtf8();
+      clientIp_ = s;
+      return s;
+    }
+  }
+  /**
+   * <code>string client_ip = 2;</code>
+   * @return The bytes for clientIp.
+   */
+  @java.lang.Override
+  public com.google.protobuf.ByteString
+      getClientIpBytes() {
+    java.lang.Object ref = clientIp_;
+    if (ref instanceof java.lang.String) {
+      com.google.protobuf.ByteString b = 
+          com.google.protobuf.ByteString.copyFromUtf8(
+              (java.lang.String) ref);
+      clientIp_ = b;
+      return b;
+    } else {
+      return (com.google.protobuf.ByteString) ref;
+    }
+  }
+
   private byte memoizedIsInitialized = -1;
   @java.lang.Override
   public final boolean isInitialized() {
@@ -100,6 +140,9 @@ private static final long serialVersionUID = 0L;
     if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(fileName_)) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 1, fileName_);
     }
+    if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(clientIp_)) {
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 2, clientIp_);
+    }
     getUnknownFields().writeTo(output);
   }
 
@@ -111,6 +154,9 @@ private static final long serialVersionUID = 0L;
     size = 0;
     if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(fileName_)) {
       size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, fileName_);
+    }
+    if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(clientIp_)) {
+      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, clientIp_);
     }
     size += getUnknownFields().getSerializedSize();
     memoizedSize = size;
@@ -129,6 +175,8 @@ private static final long serialVersionUID = 0L;
 
     if (!getFileName()
         .equals(other.getFileName())) return false;
+    if (!getClientIp()
+        .equals(other.getClientIp())) return false;
     if (!getUnknownFields().equals(other.getUnknownFields())) return false;
     return true;
   }
@@ -142,6 +190,8 @@ private static final long serialVersionUID = 0L;
     hash = (19 * hash) + getDescriptor().hashCode();
     hash = (37 * hash) + FILE_NAME_FIELD_NUMBER;
     hash = (53 * hash) + getFileName().hashCode();
+    hash = (37 * hash) + CLIENT_IP_FIELD_NUMBER;
+    hash = (53 * hash) + getClientIp().hashCode();
     hash = (29 * hash) + getUnknownFields().hashCode();
     memoizedHashCode = hash;
     return hash;
@@ -272,6 +322,7 @@ private static final long serialVersionUID = 0L;
       super.clear();
       bitField0_ = 0;
       fileName_ = "";
+      clientIp_ = "";
       return this;
     }
 
@@ -307,6 +358,9 @@ private static final long serialVersionUID = 0L;
       int from_bitField0_ = bitField0_;
       if (((from_bitField0_ & 0x00000001) != 0)) {
         result.fileName_ = fileName_;
+      }
+      if (((from_bitField0_ & 0x00000002) != 0)) {
+        result.clientIp_ = clientIp_;
       }
     }
 
@@ -359,6 +413,11 @@ private static final long serialVersionUID = 0L;
         bitField0_ |= 0x00000001;
         onChanged();
       }
+      if (!other.getClientIp().isEmpty()) {
+        clientIp_ = other.clientIp_;
+        bitField0_ |= 0x00000002;
+        onChanged();
+      }
       this.mergeUnknownFields(other.getUnknownFields());
       onChanged();
       return this;
@@ -390,6 +449,11 @@ private static final long serialVersionUID = 0L;
               bitField0_ |= 0x00000001;
               break;
             } // case 10
+            case 18: {
+              clientIp_ = input.readStringRequireUtf8();
+              bitField0_ |= 0x00000002;
+              break;
+            } // case 18
             default: {
               if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                 done = true; // was an endgroup tag
@@ -475,6 +539,78 @@ private static final long serialVersionUID = 0L;
       checkByteStringIsUtf8(value);
       fileName_ = value;
       bitField0_ |= 0x00000001;
+      onChanged();
+      return this;
+    }
+
+    private java.lang.Object clientIp_ = "";
+    /**
+     * <code>string client_ip = 2;</code>
+     * @return The clientIp.
+     */
+    public java.lang.String getClientIp() {
+      java.lang.Object ref = clientIp_;
+      if (!(ref instanceof java.lang.String)) {
+        com.google.protobuf.ByteString bs =
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        clientIp_ = s;
+        return s;
+      } else {
+        return (java.lang.String) ref;
+      }
+    }
+    /**
+     * <code>string client_ip = 2;</code>
+     * @return The bytes for clientIp.
+     */
+    public com.google.protobuf.ByteString
+        getClientIpBytes() {
+      java.lang.Object ref = clientIp_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        clientIp_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    /**
+     * <code>string client_ip = 2;</code>
+     * @param value The clientIp to set.
+     * @return This builder for chaining.
+     */
+    public Builder setClientIp(
+        java.lang.String value) {
+      if (value == null) { throw new NullPointerException(); }
+      clientIp_ = value;
+      bitField0_ |= 0x00000002;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>string client_ip = 2;</code>
+     * @return This builder for chaining.
+     */
+    public Builder clearClientIp() {
+      clientIp_ = getDefaultInstance().getClientIp();
+      bitField0_ = (bitField0_ & ~0x00000002);
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>string client_ip = 2;</code>
+     * @param value The bytes for clientIp to set.
+     * @return This builder for chaining.
+     */
+    public Builder setClientIpBytes(
+        com.google.protobuf.ByteString value) {
+      if (value == null) { throw new NullPointerException(); }
+      checkByteStringIsUtf8(value);
+      clientIp_ = value;
+      bitField0_ |= 0x00000002;
       onChanged();
       return this;
     }

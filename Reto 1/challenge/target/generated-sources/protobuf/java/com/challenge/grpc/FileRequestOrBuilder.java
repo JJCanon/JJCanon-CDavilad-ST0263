@@ -18,4 +18,16 @@ public interface FileRequestOrBuilder extends
    */
   com.google.protobuf.ByteString
       getFileNameBytes();
+
+  /**
+   * <code>string client_ip = 2;</code>
+   * @return The clientIp.
+   */
+  java.lang.String getClientIp();
+  /**
+   * <code>string client_ip = 2;</code>
+   * @return The bytes for clientIp.
+   */
+  com.google.protobuf.ByteString
+      getClientIpBytes();
 }
