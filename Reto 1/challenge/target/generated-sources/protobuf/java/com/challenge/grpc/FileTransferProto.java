@@ -33,13 +33,15 @@ public final class FileTransferProto {
       descriptor;
   static {
     java.lang.String[] descriptorData = {
-      "\n\022FileTransfer.proto\022\014filetransfer\" \n\013Fi" +
-      "leRequest\022\021\n\tfile_name\030\001 \001(\t\"\037\n\014FileResp" +
-      "onse\022\017\n\007message\030\001 \001(\t2W\n\014FileTransfer\022G\n" +
-      "\014TransferFile\022\031.filetransfer.FileRequest" +
-      "\032\032.filetransfer.FileResponse\"\000B)\n\022com.ch" +
-      "allenge.grpcB\021FileTransferProtoP\001b\006proto" +
-      "3"
+      "\n\022FileTransfer.proto\022\014filetransfer\"3\n\013Fi" +
+      "leRequest\022\021\n\tfile_name\030\001 \001(\t\022\021\n\tclient_i" +
+      "p\030\002 \001(\t\"\037\n\014FileResponse\022\017\n\007message\030\001 \001(\t" +
+      "2\236\001\n\014FileTransfer\022G\n\014TransferFile\022\031.file" +
+      "transfer.FileRequest\032\032.filetransfer.File" +
+      "Response\"\000\022E\n\nUploadFile\022\031.filetransfer." +
+      "FileRequest\032\032.filetransfer.FileResponse\"" +
+      "\000B)\n\022com.challenge.grpcB\021FileTransferPro" +
+      "toP\001b\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -50,7 +52,7 @@ public final class FileTransferProto {
     internal_static_filetransfer_FileRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_filetransfer_FileRequest_descriptor,
-        new java.lang.String[] { "FileName", });
+        new java.lang.String[] { "FileName", "ClientIp", });
     internal_static_filetransfer_FileResponse_descriptor =
       getDescriptor().getMessageTypes().get(1);
     internal_static_filetransfer_FileResponse_fieldAccessorTable = new

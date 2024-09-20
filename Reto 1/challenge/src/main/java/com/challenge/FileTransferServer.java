@@ -40,4 +40,29 @@ public class FileTransferServer extends FileTransferGrpc.FileTransferImplBase {
         responseObserver.onCompleted();
         System.out.println(message);
     }
+
+    @Override
+    public void uploadFile(FileRequest request, StreamObserver<FileResponse> responseObserver) {
+        String fileName = request.getFileName();
+        
+        try {
+            //Leer y actualizar el archivo metadata.json
+            String jsonFilePath = "src/main/java/com/challenge/metadata.json";
+            String content = new String(Files.readAllBytes(Paths.get(jsonFilePath)));
+            JSONObject json = new JSONObject(content);
+
+            //Registrar el nuevo archivo en el JSON
+            json.put(fileName, fileName);
+            Files.write(Paths.get(jsonFilePath), json.toString().getBytes());
+            
+            String message = "Archivo '" + fileName + "' subido y registrado exitosamente en metadata.json.";
+            FileResponse response = FileResponse.newBuilder().setMessage(message).build();
+            responseObserver.onNext(response);
+        } catch (Exception e) {
+            e.printStackTrace();
+            responseObserver.onError(e);
+        }
+        responseObserver.onCompleted();
+    }
+
 }

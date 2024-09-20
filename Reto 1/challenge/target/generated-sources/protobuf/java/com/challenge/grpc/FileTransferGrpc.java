@@ -46,6 +46,37 @@ public final class FileTransferGrpc {
     return getTransferFileMethod;
   }
 
+  private static volatile io.grpc.MethodDescriptor<com.challenge.grpc.FileRequest,
+      com.challenge.grpc.FileResponse> getUploadFileMethod;
+
+  @io.grpc.stub.annotations.RpcMethod(
+      fullMethodName = SERVICE_NAME + '/' + "UploadFile",
+      requestType = com.challenge.grpc.FileRequest.class,
+      responseType = com.challenge.grpc.FileResponse.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
+  public static io.grpc.MethodDescriptor<com.challenge.grpc.FileRequest,
+      com.challenge.grpc.FileResponse> getUploadFileMethod() {
+    io.grpc.MethodDescriptor<com.challenge.grpc.FileRequest, com.challenge.grpc.FileResponse> getUploadFileMethod;
+    if ((getUploadFileMethod = FileTransferGrpc.getUploadFileMethod) == null) {
+      synchronized (FileTransferGrpc.class) {
+        if ((getUploadFileMethod = FileTransferGrpc.getUploadFileMethod) == null) {
+          FileTransferGrpc.getUploadFileMethod = getUploadFileMethod =
+              io.grpc.MethodDescriptor.<com.challenge.grpc.FileRequest, com.challenge.grpc.FileResponse>newBuilder()
+              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
+              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "UploadFile"))
+              .setSampledToLocalTracing(true)
+              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  com.challenge.grpc.FileRequest.getDefaultInstance()))
+              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  com.challenge.grpc.FileResponse.getDefaultInstance()))
+              .setSchemaDescriptor(new FileTransferMethodDescriptorSupplier("UploadFile"))
+              .build();
+        }
+      }
+    }
+    return getUploadFileMethod;
+  }
+
   /**
    * Creates a new async stub that supports all call types for the service
    */
@@ -100,6 +131,13 @@ public final class FileTransferGrpc {
         io.grpc.stub.StreamObserver<com.challenge.grpc.FileResponse> responseObserver) {
       io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getTransferFileMethod(), responseObserver);
     }
+
+    /**
+     */
+    default void uploadFile(com.challenge.grpc.FileRequest request,
+        io.grpc.stub.StreamObserver<com.challenge.grpc.FileResponse> responseObserver) {
+      io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getUploadFileMethod(), responseObserver);
+    }
   }
 
   /**
@@ -136,6 +174,14 @@ public final class FileTransferGrpc {
       io.grpc.stub.ClientCalls.asyncUnaryCall(
           getChannel().newCall(getTransferFileMethod(), getCallOptions()), request, responseObserver);
     }
+
+    /**
+     */
+    public void uploadFile(com.challenge.grpc.FileRequest request,
+        io.grpc.stub.StreamObserver<com.challenge.grpc.FileResponse> responseObserver) {
+      io.grpc.stub.ClientCalls.asyncUnaryCall(
+          getChannel().newCall(getUploadFileMethod(), getCallOptions()), request, responseObserver);
+    }
   }
 
   /**
@@ -159,6 +205,13 @@ public final class FileTransferGrpc {
     public com.challenge.grpc.FileResponse transferFile(com.challenge.grpc.FileRequest request) {
       return io.grpc.stub.ClientCalls.blockingUnaryCall(
           getChannel(), getTransferFileMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public com.challenge.grpc.FileResponse uploadFile(com.challenge.grpc.FileRequest request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getUploadFileMethod(), getCallOptions(), request);
     }
   }
 
@@ -185,9 +238,18 @@ public final class FileTransferGrpc {
       return io.grpc.stub.ClientCalls.futureUnaryCall(
           getChannel().newCall(getTransferFileMethod(), getCallOptions()), request);
     }
+
+    /**
+     */
+    public com.google.common.util.concurrent.ListenableFuture<com.challenge.grpc.FileResponse> uploadFile(
+        com.challenge.grpc.FileRequest request) {
+      return io.grpc.stub.ClientCalls.futureUnaryCall(
+          getChannel().newCall(getUploadFileMethod(), getCallOptions()), request);
+    }
   }
 
   private static final int METHODID_TRANSFER_FILE = 0;
+  private static final int METHODID_UPLOAD_FILE = 1;
 
   private static final class MethodHandlers<Req, Resp> implements
       io.grpc.stub.ServerCalls.UnaryMethod<Req, Resp>,
@@ -208,6 +270,10 @@ public final class FileTransferGrpc {
       switch (methodId) {
         case METHODID_TRANSFER_FILE:
           serviceImpl.transferFile((com.challenge.grpc.FileRequest) request,
+              (io.grpc.stub.StreamObserver<com.challenge.grpc.FileResponse>) responseObserver);
+          break;
+        case METHODID_UPLOAD_FILE:
+          serviceImpl.uploadFile((com.challenge.grpc.FileRequest) request,
               (io.grpc.stub.StreamObserver<com.challenge.grpc.FileResponse>) responseObserver);
           break;
         default:
@@ -235,6 +301,13 @@ public final class FileTransferGrpc {
               com.challenge.grpc.FileRequest,
               com.challenge.grpc.FileResponse>(
                 service, METHODID_TRANSFER_FILE)))
+        .addMethod(
+          getUploadFileMethod(),
+          io.grpc.stub.ServerCalls.asyncUnaryCall(
+            new MethodHandlers<
+              com.challenge.grpc.FileRequest,
+              com.challenge.grpc.FileResponse>(
+                service, METHODID_UPLOAD_FILE)))
         .build();
   }
 
@@ -284,6 +357,7 @@ public final class FileTransferGrpc {
           serviceDescriptor = result = io.grpc.ServiceDescriptor.newBuilder(SERVICE_NAME)
               .setSchemaDescriptor(new FileTransferFileDescriptorSupplier())
               .addMethod(getTransferFileMethod())
+              .addMethod(getUploadFileMethod())
               .build();
         }
       }
