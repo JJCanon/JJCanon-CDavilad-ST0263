@@ -54,8 +54,8 @@ public class FileTransferServer extends FileTransferGrpc.FileTransferImplBase {
             //Registrar el nuevo archivo en el JSON
             json.put(fileName, fileName);
             Files.write(Paths.get(jsonFilePath), json.toString().getBytes());
-            
-            String message = "Archivo '" + fileName + "' subido y registrado exitosamente en metadata.json.";
+            System.out.println("Archivo '\" + fileName + \"' subido y registrado exitosamente");
+            String message = "Archivo '" + fileName + "' subido y registrado exitosamente";
             FileResponse response = FileResponse.newBuilder().setMessage(message).build();
             responseObserver.onNext(response);
         } catch (Exception e) {
