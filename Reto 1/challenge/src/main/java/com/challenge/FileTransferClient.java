@@ -110,6 +110,8 @@ public class FileTransferClient {
                     System.out.println("Ingrese el nombre del archivo y el tipo de archivo a transferir (i.e: hola.pdf):");
                     fileName = scanner.next();
                     ipServer = clientT.transferFileTracker(fileName);
+                    clientT.transferFile(fileName);
+                    System.out.println("Termina");
                     scanner.close();
                     break;
 

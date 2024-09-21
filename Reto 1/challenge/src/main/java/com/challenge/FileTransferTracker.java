@@ -70,12 +70,13 @@ public class FileTransferTracker extends FileTransferGrpc.FileTransferImplBase {
             String jsonFilePath = "src/main/java/com/challenge/metadataTracker.json";
             String content = new String(Files.readAllBytes(Paths.get(jsonFilePath)));
             JSONObject json = new JSONObject(content);
-
+            System.out.println("fileName");
             // Registrar el archivo con la IP del cliente en el JSON
             json.put(fileName, clientIp);
             Files.write(Paths.get(jsonFilePath), json.toString().getBytes());
             
-            String message = "Archivo '" + fileName + "' registrado en el tracker con IP: " + clientIp;
+            String message = "Archivo " + fileName + " registrado en el server con IP: " + clientIp;
+
             FileResponse response = FileResponse.newBuilder().setMessage(message).build();
             responseObserver.onNext(response);
         } catch (Exception e) {
