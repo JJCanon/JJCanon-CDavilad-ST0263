@@ -68,15 +68,15 @@ public class FileTransferClient {
     // Método para subir archivo en el cliente
     public void uploadFile(String fileName) {
         // Obtener la IP local del cliente
-        String clientIp = getLocalIpAddress();  
+        String clientIp = getLocalIpAddress();
         System.out.println("La IP del cliente es: " + clientIp);
         FileRequest request = FileRequest.newBuilder().setFileName(fileName).setClientIp(clientIp).build();
-        
+
         // Registrar el archivo en el tracker (metadataTracker.json)
         System.out.println("Registrando archivo en el tracker...");
         FileResponse trackerResponse = blockingStub.uploadFile(request);
         System.out.println("Respuesta del tracker: " + trackerResponse.getMessage());
-    
+
         // Luego registrar en el servidor (metadata.json)
         FileTransferClient serverClient = new FileTransferClient(clientIp, 50051);
         try {
@@ -103,11 +103,13 @@ public class FileTransferClient {
 
         try {
             Scanner scanner = new Scanner(System.in);
-            System.out.println("¿Qué acción deseas realizar? Responde con el número de la opción: \n 1. Descargar Archivo \n 2. Subir Archivo");
+            System.out.println(
+                    "¿Qué acción deseas realizar? Responde con el número de la opción: \n 1. Descargar Archivo \n 2. Subir Archivo");
             option = scanner.next();
             switch (option) {
                 case "1":
-                    System.out.println("Ingrese el nombre del archivo y el tipo de archivo a transferir (i.e: hola.pdf):");
+                    System.out.println(
+                            "Ingrese el nombre del archivo y el tipo de archivo a transferir (i.e: hola.pdf):");
                     fileName = scanner.next();
                     ipServer = clientT.transferFileTracker(fileName);
                     clientT.transferFile(fileName);
@@ -119,13 +121,12 @@ public class FileTransferClient {
                     System.out.println("Ingrese el nombre del archivo que desea subir (i.e: nuevo_archivo.txt):");
                     fileName = scanner.next();
                     // Subir el archivo al tracker
-                    clientT.uploadFile(fileName);  // Reemplaza 'localhost' con la IP correcta si es necesario
+                    clientT.uploadFile(fileName); // Reemplaza 'localhost' con la IP correcta si es necesario
                     scanner.close();
                     break;
                 default:
                     break;
             }
-            
 
         } finally {
             clientT.shutdown();
