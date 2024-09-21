@@ -63,24 +63,26 @@ public class FileTransferTracker extends FileTransferGrpc.FileTransferImplBase {
     @Override
     public void uploadFile(FileRequest request, StreamObserver<FileResponse> responseObserver) {
         String fileName = request.getFileName();
-        String clientIp = request.getClientIp();  // Aquí debes obtener la IP del cliente de alguna manera.
-        
+        String clientIp = request.getClientIp(); // Aquí debes obtener la IP del cliente de alguna manera.
+
         try {
             // Leer y actualizar el archivo metadataTracker.json
             String jsonFilePath = "src/main/java/com/challenge/metadataTracker.json";
             String content = new String(Files.readAllBytes(Paths.get(jsonFilePath)));
             JSONObject json = new JSONObject(content);
-            System.out.println(fileName);
+            System.out.println("actualizar");
             json.put(fileName, clientIp);
             Files.write(Paths.get(jsonFilePath), json.toString().getBytes());
             // Leer y actualizar el archivo metadata.json
-            jsonFilePath = "src/main/java/com/challenge/metadata.json";
-            content = new String(Files.readAllBytes(Paths.get(jsonFilePath)));
-            json = new JSONObject(content);
-            System.out.println(fileName);
-            json.put(fileName, fileName);
-            Files.write(Paths.get(jsonFilePath), json.toString().getBytes());
-            
+            /*
+             * jsonFilePath = "src/main/java/com/challenge/metadata.json";
+             * content = new String(Files.readAllBytes(Paths.get(jsonFilePath)));
+             * json = new JSONObject(content);
+             * System.out.println(fileName);
+             * json.put(fileName, fileName);
+             * Files.write(Paths.get(jsonFilePath), json.toString().getBytes());
+             */
+
             String message = "Archivo " + fileName + " registrado en el server con IP: " + clientIp;
 
             FileResponse response = FileResponse.newBuilder().setMessage(message).build();

@@ -97,10 +97,9 @@ public class FileTransferClient {
         String option = "";
         System.out.println("Iniciando el cliente gRPC...");
 
-        String ipTracker = "3.90.201.209";
+        String ipTracker = "localhost";
         String ipServer = "localhost";
         FileTransferClient clientT = new FileTransferClient(ipTracker, 50052);
-
         try {
             Scanner scanner = new Scanner(System.in);
             System.out.println(
@@ -112,11 +111,9 @@ public class FileTransferClient {
                             "Ingrese el nombre del archivo y el tipo de archivo a transferir (i.e: hola.pdf):");
                     fileName = scanner.next();
                     ipServer = clientT.transferFileTracker(fileName);
-                    clientT.transferFile(fileName);
                     System.out.println("Termina");
                     scanner.close();
                     break;
-
                 case "2":
                     System.out.println("Ingrese el nombre del archivo que desea subir (i.e: nuevo_archivo.txt):");
                     fileName = scanner.next();
@@ -132,7 +129,8 @@ public class FileTransferClient {
             clientT.shutdown();
         }
         if (ipServer != "") {
-            FileTransferClient client = new FileTransferClient("localhost", 50051);
+            System.out.println("conectando con el server");
+            FileTransferClient client = new FileTransferClient(ipServer, 50051);
             try {
                 client.transferFile(fileName);
             } finally {
