@@ -97,11 +97,11 @@ public class FileTransferClient {
         String option = "";
         System.out.println("Iniciando el cliente gRPC...");
 
-        String ipTracker = "3.90.201.209";
+        String ipTracker = "localhost";
         String ipServer = "localhost";
         FileTransferClient clientT = new FileTransferClient(ipTracker, 50052);
+        Scanner scanner = new Scanner(System.in);
         try {
-            Scanner scanner = new Scanner(System.in);
             System.out.println(
                     "¿Qué acción deseas realizar? Responde con el número de la opción: \n 1. Descargar Archivo \n 2. Subir Archivo");
             option = scanner.next();
@@ -112,14 +112,12 @@ public class FileTransferClient {
                     fileName = scanner.next();
                     ipServer = clientT.transferFileTracker(fileName);
                     System.out.println("Termina");
-                    scanner.close();
                     break;
                 case "2":
                     System.out.println("Ingrese el nombre del archivo que desea subir (i.e: nuevo_archivo.txt):");
                     fileName = scanner.next();
                     // Subir el archivo al tracker
                     clientT.uploadFile(fileName); // Reemplaza 'localhost' con la IP correcta si es necesario
-                    scanner.close();
                     break;
                 default:
                     break;
@@ -128,15 +126,18 @@ public class FileTransferClient {
         } finally {
             clientT.shutdown();
         }
-        if (ipServer != "") {
-            System.out.println("conectando con el server");
+        if (ipServer != "" && option.equals("1")) {
+            System.out.println("Conectando con el servidor...");
             FileTransferClient client = new FileTransferClient(ipServer, 50051);
             try {
                 client.transferFile(fileName);
             } finally {
                 client.shutdown();
             }
-        } else
-            System.out.println("Ip no encontrada");
+        } else {
+            if (option.equals("1"))
+                System.out.println("Ip no encontrada");
+        }
+        scanner.close();
     }
 }

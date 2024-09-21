@@ -1,13 +1,4 @@
-com\challenge\grpc\FileTransferGrpc$FileTransferFileDescriptorSupplier.class
-com\challenge\grpc\FileTransferGrpc$FileTransferBlockingStub.class
-com\challenge\grpc\FileTransferGrpc$FileTransferFutureStub.class
-com\challenge\grpc\FileTransferGrpc$2.class
-com\challenge\grpc\FileTransferGrpc$MethodHandlers.class
-com\challenge\grpc\FileTransferGrpc$AsyncService.class
-com\challenge\grpc\FileTransferGrpc$FileTransferImplBase.class
-com\challenge\grpc\FileTransferGrpc$FileTransferBaseDescriptorSupplier.class
-com\challenge\grpc\FileTransferGrpc$3.class
-com\challenge\grpc\FileTransferGrpc.class
-com\challenge\grpc\FileTransferGrpc$1.class
-com\challenge\grpc\FileTransferGrpc$FileTransferStub.class
-com\challenge\grpc\FileTransferGrpc$FileTransferMethodDescriptorSupplier.class
+com\challenge\FileTransferClient.class
+com\challenge\FileTransferTracker.class
+com\challenge\FileTransferServer.class
+com\challenge\Main.class
