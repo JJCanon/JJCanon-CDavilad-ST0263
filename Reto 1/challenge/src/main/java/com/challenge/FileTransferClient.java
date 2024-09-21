@@ -10,9 +10,9 @@ import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import java.net.InetAddress;
-import java.net.UnknownHostException;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.URL;
 
 public class FileTransferClient {
     private final ManagedChannel channel;
@@ -26,13 +26,15 @@ public class FileTransferClient {
     }
 
     public String getLocalIpAddress() {
+        String publicIp = "IP desconocida";
         try {
-            InetAddress ip = InetAddress.getLocalHost();
-            return ip.getHostAddress();
-        } catch (UnknownHostException e) {
+            URL url = new URL("http://checkip.amazonaws.com/");
+            BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
+            publicIp = br.readLine(); // Lee la IP pública del servicio
+        } catch (Exception e) {
             e.printStackTrace();
-            return "IP desconocida";
         }
+        return publicIp;
     }
 
     public void shutdown() throws InterruptedException {
