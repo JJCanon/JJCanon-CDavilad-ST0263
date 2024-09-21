@@ -37,6 +37,18 @@ public class FileTransferClient {
         return publicIp;
     }
 
+    public static String getLocalIpAddress2() {
+        String publicIp = "IP desconocida";
+        try {
+            URL url = new URL("http://checkip.amazonaws.com/");
+            BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
+            publicIp = br.readLine(); // Lee la IP pública del servicio
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return publicIp;
+    }
+
     public void shutdown() throws InterruptedException {
         channel.shutdown().awaitTermination(5, TimeUnit.SECONDS);
     }
@@ -73,14 +85,8 @@ public class FileTransferClient {
         String clientIp = getLocalIpAddress();
         System.out.println("La IP del cliente es: " + clientIp);
         FileRequest request = FileRequest.newBuilder().setFileName(fileName).setClientIp(clientIp).build();
-
-        // Registrar el archivo en el tracker (metadataTracker.json)
-        System.out.println("Registrando archivo en el tracker...");
-        FileResponse trackerResponse = blockingStub.uploadFile(request);
-        System.out.println("Respuesta del tracker: " + trackerResponse.getMessage());
-
-        // Luego registrar en el servidor (metadata.json)
-        FileTransferClient serverClient = new FileTransferClient(clientIp, 50051);
+        // registrar en el servidor (metadata.json)
+        FileTransferClient serverClient = new FileTransferClient("localhost", 50051);
         try {
             System.out.println("Registrando archivo en el servidor...");
             FileResponse serverResponse = serverClient.blockingStub.uploadFile(request);
@@ -92,6 +98,10 @@ public class FileTransferClient {
                 e.printStackTrace();
             }
         }
+        // Registrar el archivo en el tracker (metadataTracker.json)
+        System.out.println("Registrando archivo en el tracker...");
+        FileResponse trackerResponse = blockingStub.uploadFile(request);
+        System.out.println("Respuesta del tracker: " + trackerResponse.getMessage());
     }
 
     public static void main(String[] args) throws InterruptedException {
@@ -113,6 +123,9 @@ public class FileTransferClient {
                             "Ingrese el nombre del archivo y el tipo de archivo a transferir (i.e: hola.pdf):");
                     fileName = scanner.next();
                     ipServer = clientT.transferFileTracker(fileName);
+                    System.out.println(ipServer + " " + getLocalIpAddress2());
+                    if (ipServer.equals(getLocalIpAddress2()))
+                        ipServer = "localhost";
                     System.out.println("Termina");
                     break;
                 case "2":
