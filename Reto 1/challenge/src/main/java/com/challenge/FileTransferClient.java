@@ -83,7 +83,7 @@ public class FileTransferClient {
     public void uploadFile(String fileName) {
         // Obtener la IP local del cliente
         String clientIp = getLocalIpAddress();
-        System.out.println("La IP del cliente es: " + clientIp);
+        // System.out.println("La IP del cliente es: " + clientIp);
         FileRequest request = FileRequest.newBuilder().setFileName(fileName).setClientIp(clientIp).build();
         // registrar en el servidor (metadata.json)
         FileTransferClient serverClient = new FileTransferClient("localhost", 50051);
@@ -123,10 +123,8 @@ public class FileTransferClient {
                             "Ingrese el nombre del archivo y el tipo de archivo a transferir (i.e: hola.pdf):");
                     fileName = scanner.next();
                     ipServer = clientT.transferFileTracker(fileName);
-                    System.out.println(ipServer + " " + getLocalIpAddress2());
                     if (ipServer.equals(getLocalIpAddress2()))
                         ipServer = "localhost";
-                    System.out.println("Termina");
                     break;
                 case "2":
                     System.out.println("Ingrese el nombre del archivo que desea subir (i.e: nuevo_archivo.txt):");
