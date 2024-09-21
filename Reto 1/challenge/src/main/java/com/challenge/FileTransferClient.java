@@ -97,7 +97,7 @@ public class FileTransferClient {
         String option = "";
         System.out.println("Iniciando el cliente gRPC...");
 
-        String ipTracker = "localhost";
+        String ipTracker = "3.90.201.209";
         String ipServer = "localhost";
         FileTransferClient clientT = new FileTransferClient(ipTracker, 50052);
         try {
