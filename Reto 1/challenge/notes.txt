@@ -5,3 +5,13 @@ you must compile in windows terminal
 run server: mvn exec:java -Dexec.mainClass="com.challenge.Main"
 run client: mvn exec:java -Dexec.mainClass="com.challenge.FileTransferClient"
 run Tracker: mvn exec:java -Dexec.mainClass="com.challenge.FileTransferTracker"
+
+compile dockerfiles:
+docker build -f Dockerfile-tracker -t grpc-tracker .
+docker build -f Dockerfile-server -t grpc-server .
+docker build -f Dockerfile-client -t grpc-client .
+
+run docker commands
+docker run -p 50051:50051 grpc-tracker
+docker run -p 50052:50052 grpc-server
+docker run grpc-client
