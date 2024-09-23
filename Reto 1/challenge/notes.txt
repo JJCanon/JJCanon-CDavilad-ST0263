@@ -1,10 +1,42 @@
-java version 22.0.1
-maven version 3.9.9
+java -> 22.0.1
+maven -> 3.9.9
 
-you must compile in windows terminal
+libraries
+gRPC:
+    grpc-netty-shaded -> 1.56.0
+    grpc-protobuf -> 1.56.0
+    grpc-stub -> 1.56.0
+    protoc-gen-grpc-java -> 1.56.0
+protobuf:
+    com.google.protobuf:protoc -> 3.21.12
+JUnit:
+    junit:junit -> 4.13.2
+JSON:
+    org.json.json:20210307
+javax.annotation:
+    javax.annotation:javax.annotation-api -> 1.3.2
+Maven Compiles Plugin:
+    org.apache.maven.plugins:maven-compiles-plugin -> 3.8.1
+Protobuf Maven Plugin:
+    org.xolstice.maven.plugins:protobuf-maven-plugin -> 0.6.1
+OS Maven Plugin:
+    kr.motd.maven:os-maven-plugin -> 1.7.0
+Exec Maven Plugin
+    org.codehaus.mojo:exec-maven-plugin -> 3.0.0
+
+Herramientas de desarrollo:
+
+-Maven: para la gestión de dependencias y la construcción del proyecto.
+-gRPC: para la comunicación remota entre cliente y servidor.
+-VSCode: mencionado como el entorno de desarrollo integrado (IDE) donde se está desarrollando el proyecto.
+-Protobuf: para la generación de código basado en archivos .proto.
+-JUnit: para la realización de pruebas
+
+windows terminal
+compile: mvn clean install
+run Tracker: mvn exec:java -Dexec.mainClass="com.challenge.FileTransferTracker"
 run server: mvn exec:java -Dexec.mainClass="com.challenge.Main"
 run client: mvn exec:java -Dexec.mainClass="com.challenge.FileTransferClient"
-run Tracker: mvn exec:java -Dexec.mainClass="com.challenge.FileTransferTracker"
 
 compile dockerfiles:
 docker build -f Dockerfile-tracker -t grpc-tracker .
@@ -15,3 +47,8 @@ run docker commands
 docker run -p 50051:50051 grpc-tracker
 docker run -p 50052:50052 grpc-server
 docker run grpc-client
+
+ips AWS:
+98.83.131.229
+18.209.236.113
+44.209.228.210

@@ -109,7 +109,7 @@ public class FileTransferClient {
         String option = "";
         System.out.println("Iniciando el cliente gRPC...");
 
-        String ipTracker = "52.205.226.192";
+        String ipTracker = "34.197.5.47";
         String ipServer = "localhost";
         FileTransferClient clientT = new FileTransferClient(ipTracker, 50052);
         Scanner scanner = new Scanner(System.in);
