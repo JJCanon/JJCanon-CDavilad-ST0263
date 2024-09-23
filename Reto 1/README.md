@@ -199,7 +199,7 @@ Este comando lanza el tracker, que comenzará a escuchar en el puerto especifica
     ```
  5. Abre una nueva terminal y usa el siguiente comando:
     ```
-     mvn exec:java -Dexec.mainClass="com.challenge.Main"
+     mvn exec:java -Dexec.mainClass="com.challenge.FileTransferClient"
     ```
 Este comando inicia el peer que se conecta al tracker y comienza a compartir o descargar archivos.
     
