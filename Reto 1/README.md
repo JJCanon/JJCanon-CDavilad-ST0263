@@ -1,6 +1,6 @@
 # info de la materia: ST0263-1715 Tópicos Especiales de Telemática
 #
-# Estudiante(s): Juan José Gabriel Cañón Díaz, jjcanond@eafit.edu.co
+# Estudiante(s): Juan José Gabriel Cañón Díaz, jjcanond@eafit.edu.co ; Cristian David Dávila García, cddavilag@eafit.edu.co
 #
 # Profesor: Juan Carlos Montoya Mendoza, jcmontoy@eafit.edu.co
 #
