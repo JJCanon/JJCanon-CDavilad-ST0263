@@ -172,12 +172,37 @@ Se pueden utilizar variables de ambiente para controlar ciertos aspectos del com
 - IP publica peer: 98.83.131.229
 - IP publca peer: 44.209.228.210
 
-## descripción y como se configura los parámetros del proyecto (ej: ip, puertos, conexión a bases de datos, variables de ambiente, parámetros, etc)
-
 ## como se lanza el servidor.
+Para lanzar el Tracker:
+ 1. Clona el repositorio del proyecto.
+ 2. Asegúrate de tener Maven instalado y configurado.
+ 3. Usa el siguiente comando para compilar el proyecto:
+    ```
+     mvn clean install
+    ```
+ 4. Usa el siguiente comando para ejecutar el Tracker:
+    ```
+     mvn exec:java -Dexec.mainClass="com.challenge.FileTransferTracker"
+    ```
+Este comando lanza el tracker, que comenzará a escuchar en el puerto especificado para recibir solicitudes de los peers.
 
 ## una mini guia de como un usuario utilizaría el software o la aplicación
-
+ 1. Clona el repositorio del proyecto.
+ 2. Asegúrate de tener Maven instalado y configurado.
+ 3. Usa el siguiente comando para compilar el proyecto:
+    ```
+     mvn clean install
+    ```
+ 4. Usa el siguiente comando para ejecutar el Server en una terminal:
+    ```
+     mvn exec:java -Dexec.mainClass="com.challenge.Main"
+    ```
+ 5. Abre una nueva terminal y usa el siguiente comando:
+    ```
+     mvn exec:java -Dexec.mainClass="com.challenge.Main"
+    ```
+Este comando inicia el peer que se conecta al tracker y comienza a compartir o descargar archivos.
+    
 ## opcionalmente - si quiere mostrar resultados o pantallazos 
 
 # 5. otra información que considere relevante para esta actividad.
