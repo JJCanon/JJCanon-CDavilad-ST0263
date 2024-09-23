@@ -137,8 +137,6 @@ Se pueden utilizar variables de ambiente para controlar ciertos aspectos del com
 - Peers: Actuan como clientes o servidores segun las necesidades, comunicandose con el tracker y entre si para compartir los archivos.
 - Transferencia: se implementa una logica para la transferencia de archivos entre los nodos una vez se optiene la dirección IP del peer que lo posee.
 
-## Servicios
-
 ## opcionalmente - si quiere mostrar resultados o pantallazos 
 
 # 4. Descripción del ambiente de EJECUCIÓN (en producción) lenguaje de programación, librerias, paquetes, etc, con sus numeros de versiones.
