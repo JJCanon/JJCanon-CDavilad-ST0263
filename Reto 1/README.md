@@ -26,7 +26,7 @@
 
 ## Arquitectura del Sistema
 
-![image](https://github.com/user-attachments/assets/0e1141e0-865c-4fdc-827d-96af0de90757)
+![image](https://github.com/user-attachments/assets/dc6b1fe7-6bc0-46fc-8468-fbfed0657cd6)
 
 <texto descriptivo> El sistema distribuido sigue una arquitectura P2P, donde los clientes y servidores interactuan entre si para la transferecia de archivos a través de un protocolo gRPC. la arquitectura se organiza en los siguientes componentes principales
 1. **Tracker/Indexer**
@@ -205,6 +205,9 @@ Este comando lanza el tracker, que comenzará a escuchar en el puerto especifica
      mvn exec:java -Dexec.mainClass="com.challenge.FileTransferClient"
     ```
 Este comando inicia el peer que se conecta al tracker y comienza a compartir o descargar archivos.
+
+![Reto11111](https://github.com/user-attachments/assets/fcb881cb-5c10-4998-b5f2-8d7a13316d6a)
+
     
 ## opcionalmente - si quiere mostrar resultados o pantallazos 
 
