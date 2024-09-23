@@ -1,0 +1,14 @@
+FROM openjdk:22-jdk-slim
+
+WORKDIR /app
+
+RUN apt-get update && apt-get install -y maven
+
+COPY pom.xml ./
+RUN mvn dependency:go-offline
+
+COPY src ./src
+
+RUN mvn clean install
+
+CMD ["mvn", "exec:java", "-Dexec.mainClass=com.challenge.Main"]
