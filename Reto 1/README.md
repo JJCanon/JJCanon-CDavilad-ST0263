@@ -189,7 +189,7 @@ Este comando lanza el tracker, que comenzará a escuchar en el puerto especifica
 ## una mini guia de como un usuario utilizaría el software o la aplicación
  1. Clona el repositorio del proyecto.
  2. Asegúrate de tener Maven instalado y configurado.
- 3. Usa el siguiente comando para compilar el proyecto:
+ 3. Usa el siguiente comando para compilar el proyecto en la carpeta Reto 1/challenge:
     ```
      mvn clean install
     ```
