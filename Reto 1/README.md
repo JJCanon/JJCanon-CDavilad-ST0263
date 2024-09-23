@@ -1,11 +1,9 @@
 # info de la materia: ST0263-1715 Tópicos Especiales de Telemática
 #
-# Estudiante(s): Juan José Gabriel Cañón Díaz, jjcanond@eafit.edu.co
+# Estudiante(s): Juan José Gabriel Cañón Díaz, jjcanond@eafit.edu.co ; Cristian David Dávila García, cddavilag@eafit.edu.co
 #
 # Profesor: Juan Carlos Montoya Mendoza, jcmontoy@eafit.edu.co
 #
-# <para borrar: EL OBJETIVO DE ESTA DOCUMENTACÍON ES QUE CUALQUIER LECTOR CON EL REPO, EN ESPECIAL EL PROFESOR, ENTIENDA EL ALCANCE DE LO DESARROLLADO Y QUE PUEDA REPRODUCIR SIN EL ESTUDIANTE EL AMBIENTE DE DESARROLLO Y EJECUTAR Y USAR LA APLICACIÓN SIN PROBLEMAS>
-
 # Reto 1: Arquitectura P2P y Comunicación entre proceso 
 #
 # 1. descripción de la actividad
