@@ -25,6 +25,9 @@
 - Se hace uso de un **Tracker/Indexador** centralizado para coordinar y localizar los archivos disponibles en los peers, optimizando el proceso de busqueda y conexión.
 
 ## Arquitectura del Sistema
+
+![image](https://github.com/user-attachments/assets/0e1141e0-865c-4fdc-827d-96af0de90757)
+
 <texto descriptivo> El sistema distribuido sigue una arquitectura P2P, donde los clientes y servidores interactuan entre si para la transferecia de archivos a través de un protocolo gRPC. la arquitectura se organiza en los siguientes componentes principales
 1. **Tracker/Indexer**
    - Es el nucleo del sistema, encargado de mantener un registro de los archivos disponibles y las ubicaciones de los peers.
