@@ -2,19 +2,18 @@ syntax = "proto3";
 
 option java_multiple_files = true;
 option java_package = "com.project.grpc";
-option java_outer_classname = "FileTransferProto";
-
+option java_outer_classname = "comunicationProto";
 
 package service;
 
 service Service {
-rpc Request (SendFileRequest) returns (SendFileResponse) {}
+    rpc Request (messageRequest) returns (messageResponse) {}
 }
 
 message messageRequest {
-string request = 1;
+    string request = 1;
 }
 
 message messageResponse {
-string response = 1;
+    string response = 1;
 }
