@@ -11,6 +11,7 @@ service Service {
     rpc Read (RequestClient) returns (ResponseProxy) {}
     rpc WriteDB (RequestProxy) returns (ResponseDB) {}
     rpc ReadDB (RequestProxy) returns (ResponseDB) {}
+    rpc InterDataBaseComunication (DataBaseRequest) returns (DataBaseResponse) {}
 }
 
 message RequestClient {
@@ -27,4 +28,11 @@ message RequestProxy{
 
 message ResponseDB{
     string response_DB = 1;
+}
+
+message DataBaseRequest{
+    string db_request=1;
+}
+message DataBaseResponse{
+    string db_response=1;
 }

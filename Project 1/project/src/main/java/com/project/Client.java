@@ -42,7 +42,6 @@ public class Client {
 
     // main
     public static void main(String[] args) {
-        String data = "";
         String option = "";
         System.out.println("Iniciando cliente...");
 
