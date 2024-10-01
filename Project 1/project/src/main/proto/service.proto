@@ -2,18 +2,29 @@ syntax = "proto3";
 
 option java_multiple_files = true;
 option java_package = "com.project.grpc";
-option java_outer_classname = "comunicationProto";
+option java_outer_classname = "serviceProto";
 
 package service;
 
 service Service {
-    rpc Request (messageRequest) returns (messageResponse) {}
+    rpc Write (RequestClient) returns (ResponseProxy) {}
+    rpc Read (RequestClient) returns (ResponseProxy) {}
+    rpc WriteDB (RequestProxy) returns (ResponseDB) {}
+    rpc ReadDB (RequestProxy) returns (ResponseDB) {}
 }
 
-message messageRequest {
-    string request = 1;
+message RequestClient {
+    string request_client = 1;
 }
 
-message messageResponse {
-    string response = 1;
+message ResponseProxy {
+    string response_proxy = 1;
+}
+
+message RequestProxy{
+    string request_proxy = 1;
+}
+
+message ResponseDB{
+    string response_DB = 1;
 }

@@ -1,4 +1,4 @@
-package com.project_one;
+package com.project;
 
 public class Main {
     public static void main(String[] args) {

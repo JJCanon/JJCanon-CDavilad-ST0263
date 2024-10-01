@@ -1,0 +1,7 @@
+Languaje: Java
+
+compile project: mvn clean install
+
+run client: mvn exec:java -Dexec.mainClass="com.project.Client"
+run proxy: mvn exec:java -Dexec.mainClass="com.project.ProxyServer"
+run database: mvn exec:java -Dexec.mainClass="com.project.DataBase"
