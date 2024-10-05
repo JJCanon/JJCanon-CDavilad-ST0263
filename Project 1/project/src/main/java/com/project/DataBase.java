@@ -20,7 +20,7 @@ public class DataBase extends ServiceGrpc.ServiceImplBase {
 
     private boolean leader;
 
-    // to Write in txt
+    // to Write in txt with grpc
     @Override
     public void writeDB(RequestProxy request, StreamObserver<ResponseDB> responseObserver) {
         String data = request.getRequestProxy();
@@ -28,6 +28,21 @@ public class DataBase extends ServiceGrpc.ServiceImplBase {
         try {
             String message = "Hola Proxy, Escribir";
             System.out.println(message);
+            int portDB = 50054;
+            String ipDB = "localhost";
+            DataBase clientDB = new DataBase(ipDB, portDB);
+            try {
+                clientDB.interDataBaseComunicationCall();
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    clientDB.shutdown();
+                } catch (InterruptedException e) {
+                    System.err.println("Error al cerrar el cliente: " + e.getMessage());
+                    e.printStackTrace();
+                }
+            }
             ResponseDB response = ResponseDB.newBuilder().setResponseDB(message).build();
             responseObserver.onNext(response);
         } catch (Exception e) {
@@ -38,7 +53,7 @@ public class DataBase extends ServiceGrpc.ServiceImplBase {
         }
     }
 
-    // to read from txt
+    // to read from txt with grpc
     @Override
     public void readDB(RequestProxy request, StreamObserver<ResponseDB> responseObserver) {
         String data = request.getRequestProxy();
