@@ -12,8 +12,13 @@ service Service {
     rpc WriteDB (RequestProxy) returns (ResponseDB) {}
     rpc ReadDB (RequestProxy) returns (ResponseDB) {}
     rpc InterDataBaseComunication (DataBaseRequest) returns (DataBaseResponse) {}
+
+    //Raft
+    rpc RequestVote (VoteRequest) returns (VoteResponse){}
+    rpc AppendEntries (AppendEntriesRequest) returns (AppendEntriesResponse){}
 }
 
+// Cliente - Proxy
 message RequestClient {
     string request_client = 1;
 }
@@ -21,7 +26,7 @@ message RequestClient {
 message ResponseProxy {
     string response_proxy = 1;
 }
-
+//Proxy - DataBase
 message RequestProxy{
     string request_proxy = 1;
 }
@@ -29,10 +34,32 @@ message RequestProxy{
 message ResponseDB{
     string response_DB = 1;
 }
-
+//DataBase - DataBase
 message DataBaseRequest{
     string db_request=1;
 }
 message DataBaseResponse{
     string db_response=1;
+}
+
+//Raft
+message VoteRequest {
+    int32 term = 1;  //Termino actual del candidato
+    int32 candidateId = 2; //ID del candidato que solicita votos
+}
+
+message VoteResponse {
+    int32 term = 1; //Termino actual del votante
+    bool voteGranted=2; //Indica si el voto fue otorgado
+}
+
+// Mensajes para la replicacion de raft
+message AppendEntriesRequest {
+    int32 term = 1; //Termino del leader
+    int32 leaderId = 2; //ID del leader
+}
+
+message AppendEntriesResponse {
+    int32 term = 1; //Termino actual del seguidor
+    bool success = 2; //Indica si la replicacion fue exitosa
 }
