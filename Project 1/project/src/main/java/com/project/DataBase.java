@@ -1,223 +1,374 @@
 package com.project;
 
+//Conections
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
 import io.grpc.stub.StreamObserver;
-import com.project.grpc.ServiceGrpc;
-import com.project.grpc.RequestProxy;
-import com.project.grpc.ResponseDB;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import com.project.grpc.*;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import com.project.grpc.DataBaseRequest;
-import com.project.grpc.DataBaseResponse;
-
-//Raft
-import com.project.grpc.VoteRequest;
-import com.project.grpc.VoteResponse;
-import com.project.grpc.AppendEntriesRequest;
-import com.project.grpc.AppendEntriesResponse;
-
 public class DataBase extends ServiceGrpc.ServiceImplBase {
 
-    private final ManagedChannel channel;
-    private final ServiceGrpc.ServiceBlockingStub blockingStub;
+    // servers to receive request
+    private Server serverForProxy, serverForPeers;
 
-    // Raft attributes
+    // Ports
+    private final int PORT_FOR_PROXY = 50061;
+    private final int PORT_FOR_PEERS = 50063;
+    private final int PORT_TO_PROXY = 50062;
+
+    private final String PROXY_IP = "52.22.91.81";
+
+    // states posibles
     private enum NodeState {
         FOLLOWER, CANDIDATE, LEADER
     }
 
+    // states
     private NodeState state;
+    private final String nodeIp;
+    private final List<String> peersIps;
+    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+    private ScheduledFuture<?> electionTimer;
+    private final Random random = new Random();
+
+    // raft
     private int currentTerm;
-    private Integer votedFor;
-    private List<String> log;
-    private int commitIndex;
-    private int lastApplied;
+    private String votedFor;
+    private String leaderIp;
+    private AtomicInteger voteCount;
+    private int connectionFailed = 0;
+    // heartbeats
+    private ScheduledFuture<?> heartbeatTimer;
 
-    private final int nodeId;
-    private final List<Integer> peerIds;
-    private final Random random;
-    private final ScheduledExecutorService scheduler;
+    // Constants for timeouts
+    private static final int HEARTBEAT_INTERVAL = 50;
+    private static final int MIN_ELECTION_TIMEOUT = 150;
+    private static final int MAX_ELECTION_TIMEOUT = 300;
 
-    private static final int ELECTION_TIMEOUT_MIN = 150;
-    private static final int ELECTION_TIMEOUT_MAX = 300;
-
-    // Constructors
-    // principal Constructors
-    public DataBase(String host, int port, int nodeId, List<Integer> peerIds) {
-        this.channel = ManagedChannelBuilder.forAddress(host, port)
-                .usePlaintext()
-                .build();
-        this.blockingStub = ServiceGrpc.newBlockingStub(channel);
-
-        this.nodeId = nodeId;
-        this.peerIds = peerIds;
-        this.state = NodeState.FOLLOWER;
-        this.currentTerm = 0;
-        this.votedFor = null;
-        this.log = new ArrayList<>();
-        this.commitIndex = -1;
-        this.lastApplied = -1;
-        this.random = new Random();
-        this.scheduler = Executors.newScheduledThreadPool(1);
-
-        resetElectionTimeout();
-    }
-
-    // Secondary Constructor
-    public DataBase(String host, int port) {
-        this(host, port, 0, new ArrayList<>());
-    }
-
-    // Default Constructor
+    // constructor
     public DataBase() {
-        this("localhost", 50053);
+        this.nodeIp = getLocalIpAddress();
+
+        this.peersIps = new ArrayList<>(Arrays.asList(
+                "167.0.183.98",
+                "34.231.49.169",
+                "23.23.66.104"));
+        peersIps.remove(nodeIp);
+
+        defineServers();
+        try {
+            startsServers();
+        } catch (IOException e) {
+            System.err.println("error iniciando los servers");
+        }
+        state = NodeState.FOLLOWER;
+        votedFor = "";
+        voteCount = new AtomicInteger(0);
+        currentTerm = 0;
+        System.out.println("Nodo " + nodeIp + " iniciado como Follower. Término actual: " + currentTerm);
+        resetElectionTimer();
     }
 
-    // Raft
-    private void resetElectionTimeout() {
-        int timeout = ELECTION_TIMEOUT_MIN + random.nextInt(ELECTION_TIMEOUT_MAX - ELECTION_TIMEOUT_MIN);
-        scheduler.schedule(this::startElection, timeout, TimeUnit.MILLISECONDS);
+    // to get Ip Address
+    private String getLocalIpAddress() {
+        String publicIp = "IP desconocida";
+        try {
+            URL url = new URL("http://checkip.amazonaws.com/");
+            BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
+            publicIp = br.readLine(); // Lee la IP pública del servicio
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return publicIp;
     }
 
-    private void startElection() {
-        if (state != NodeState.LEADER) {
-            state = NodeState.CANDIDATE;
-            currentTerm++;
-            votedFor = nodeId;
-            AtomicInteger votesReceived = new AtomicInteger(1);
-            AtomicBoolean electionDecided = new AtomicBoolean(false);
+    // to defines servers
+    private void defineServers() {
+        this.serverForProxy = ServerBuilder.forPort(PORT_FOR_PROXY)
+                .addService(this).build();
+        this.serverForPeers = ServerBuilder.forPort(PORT_FOR_PEERS)
+                .addService(this).build();
+    }
 
-            CountDownLatch latch = new CountDownLatch(peerIds.size());
+    // to starts servers
+    private void startsServers() throws IOException {
+        this.serverForProxy.start();
+        this.serverForPeers.start();
+        System.out.println("Server started, listening on " +
+                PORT_FOR_PROXY + " for proxy and " +
+                PORT_FOR_PEERS + " for peers");
+    }
 
-            for (int peerId : peerIds) {
-                new Thread(() -> {
-                    try {
-                        VoteRequest request = VoteRequest.newBuilder()
-                                .setTerm(currentTerm)
-                                .setCandidateId(nodeId)
-                                .build();
+    /**
+     * raft
+     */
+    // to become Follower
+    private void becomeFollower(int term) {
+        state = NodeState.FOLLOWER;
+        votedFor = "";
+        voteCount.set(0);
+        currentTerm = term;
+        resetElectionTimer();
+        System.out.println("Nodo " + nodeIp + " iniciado como Follower. Término actual: " + term);
+        if (electionTimer != null) {
+            electionTimer.cancel(false);
+        }
+        resetElectionTimer();
+    }
 
-                        // Aqui debo enviar la solicitud de voto al peer usando gRPC
-                        VoteResponse response = blockingStub.requestVote(request);
+    // to become Candidate
+    private void becomeCandidate() {
+        state = NodeState.CANDIDATE;
+        currentTerm++;
+        votedFor = nodeIp;
+        leaderIp = "";
+        voteCount.set(1); // voto por si mismo
+        System.out.println("Nodo " + nodeIp + " se convierte en Candidato. Nuevo término: " + currentTerm);
+        System.out.println("Soy Candidate");
+        resetElectionTimer();
+    }
 
-                        if (response.getVoteGranted()) {
-                            if (votesReceived.incrementAndGet() > (peerIds.size() + 1 / 2)) {
-                                if (electionDecided.compareAndSet(false, true)) {
-                                    becomeLeader();
-                                }
-                            }
-                        } else if (response.getTerm() > currentTerm) {
-                            currentTerm = response.getTerm();
-                            state = NodeState.FOLLOWER;
-                            votedFor = null;
-                            electionDecided.set(true);
-                        }
-                    } catch (Exception e) {
-                        System.out.println("Error requesting vote from peer " + peerId + ": " + e.getMessage());
-                    } finally {
-                        latch.countDown();
-                    }
-
-                }).start();
+    // to become Leader
+    private void becomeLeader() {
+        if (state == NodeState.CANDIDATE) {
+            state = NodeState.LEADER;
+            leaderIp = nodeIp;
+            if (electionTimer != null) {
+                electionTimer.cancel(false);
             }
-            try {
-                latch.await(ELECTION_TIMEOUT_MAX, TimeUnit.MILLISECONDS);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
-            if (!electionDecided.get()) {
-                state = NodeState.FOLLOWER;
-                resetElectionTimeout();
-            }
+            System.out.println("Soy Leader");
+            imLeaderCall();
+            startHeartbeats();
         }
     }
 
-    private void becomeLeader() {
-        state = NodeState.LEADER;
-        System.out.println("Node " + nodeId + " became leader for term " + currentTerm);
-        sendHeartbeat();
+    // to reset time for start election
+    private void resetElectionTimer() {
+        if (electionTimer != null) {
+            electionTimer.cancel(false);
+        }
+        int timeout = random.nextInt(MAX_ELECTION_TIMEOUT - MIN_ELECTION_TIMEOUT) + MAX_ELECTION_TIMEOUT;
+        electionTimer = scheduler.schedule(this::startElection, timeout, TimeUnit.MILLISECONDS);
     }
 
-    private void sendHeartbeat() {
-        if (state != NodeState.LEADER) {
+    // to start election
+    private void startElection() {
+        System.out.println("start election");
+        if (state == NodeState.FOLLOWER) {
+            becomeCandidate();
+            requestVotesFromPeers();
+        }
+    }
+
+    private void requestVotesFromPeers() {
+        if (state != NodeState.CANDIDATE) {
+            return;
+        } else if (peersIps.size() == 0) {
+            becomeLeader();
             return;
         }
-        for (int peerId : peerIds) {
-
-            new Thread(() -> {
-                try {
-                    // Aqui debo de enviar el heartbeat al peer usando gRPC
-                    AppendEntriesRequest request = AppendEntriesRequest.newBuilder()
-                            .setTerm(currentTerm)
-                            .setLeaderId(nodeId)
-                            .build();
-                    AppendEntriesResponse response = blockingStub.appendEntries(request);
-                    if (response.getSuccess()) {
-                        // Heartbeat succesfully
-                    } else if (response.getTerm() > currentTerm) {
-                        currentTerm = response.getTerm();
-                        state = NodeState.FOLLOWER;
-                        votedFor = null;
-                    }
-                } catch (Exception e) {
-                    System.out.println("Error sending heartbeat to peer " + peerId);
-                }
-            }).start();
+        int contPort = -2;
+        for (String peerIp : peersIps) {
+            if (state != NodeState.CANDIDATE) {
+                break;
+            }
+            try {
+                sendVoteRequest(peerIp, contPort);
+                contPort++;
+            } catch (Exception e) {
+                System.out.println("Error al enviar solicitud de voto a " + peerIp);
+                connectionFailed++;
+            }
         }
-        scheduler.schedule(this::sendHeartbeat, 50, TimeUnit.MILLISECONDS);
+        if (state == NodeState.CANDIDATE) {
+            if (connectionFailed == peersIps.size()) {
+                System.out.println("Todos los peers estan desconectados.");
+                becomeLeader();
+            } else if (voteCount.get() <= (peersIps.size() + 1) / 2) {
+                becomeFollower(currentTerm);
+            }
+        }
+        connectionFailed = 0;
     }
 
+    // to call VoteRequest
+    private void sendVoteRequest(String peerIp, int contPort) {
+        ManagedChannel channel = ManagedChannelBuilder.forAddress(peerIp, PORT_FOR_PEERS + contPort)
+                .usePlaintext()
+                .build();
+        ServiceGrpc.ServiceBlockingStub blockingStub = ServiceGrpc.newBlockingStub(channel);
+        VoteRequest request = VoteRequest.newBuilder()
+                .setTerm(currentTerm)
+                .setCandidateIp(nodeIp)
+                .build();
+        try {
+            VoteResponse response = blockingStub.requestVote(request);
+            if (response.getVoteGranted()) {
+                voteCount.incrementAndGet();
+                if (voteCount.get() > (peersIps.size() + 1) / 2) {
+                    becomeLeader();
+                }
+            } else if (response.getTerm() > currentTerm) {
+                becomeFollower(response.getTerm());
+            }
+        } catch (Exception e) {
+            System.out.println("Error al enviar solicitud de voto a " + peerIp + ": " + e.getMessage());
+            connectionFailed++;
+        } finally {
+            channel.shutdown();
+        }
+    }
+
+    // to response rpc votes request
     @Override
     public void requestVote(VoteRequest request, StreamObserver<VoteResponse> responseObserver) {
+        int candidateTerm = request.getTerm();
+        String candidateIp = request.getCandidateIp();
         VoteResponse response;
-        if (request.getTerm() > currentTerm) {
-            currentTerm = request.getTerm();
-            state = NodeState.FOLLOWER;
-            votedFor = null;
+        if (candidateTerm > currentTerm) {
+            becomeFollower(candidateTerm);
         }
-        if (request.getTerm() < currentTerm || (votedFor != null && votedFor != request.getCandidateId())) {
-            response = VoteResponse.newBuilder().setTerm(currentTerm).setVoteGranted(false).build();
+        if (candidateTerm < currentTerm || (votedFor != "" && !votedFor.equals(candidateIp))) {
+            response = VoteResponse.newBuilder()
+                    .setTerm(currentTerm).setVoteGranted(false).build();
         } else {
-            votedFor = request.getCandidateId();
-            response = VoteResponse.newBuilder().setTerm(currentTerm).setVoteGranted(true).build();
-            resetElectionTimeout();
+            votedFor = candidateIp;
+            response = VoteResponse.newBuilder()
+                    .setTerm(candidateTerm)
+                    .setVoteGranted(true).build();
+            resetElectionTimer();
         }
-
         responseObserver.onNext(response);
         responseObserver.onCompleted();
     }
 
+    // to send to proxy im the leader
+    private void imLeaderCall() {
+        System.out.println("Notificando al Proxy");
+        ManagedChannel channelForProxy = ManagedChannelBuilder.forAddress(PROXY_IP, PORT_TO_PROXY)
+                .usePlaintext()
+                .build();
+        ServiceGrpc.ServiceBlockingStub blockingStubProxy = ServiceGrpc.newBlockingStub(channelForProxy);
+        LeaderRequest request = LeaderRequest.newBuilder()
+                .setLeaderRequest(nodeIp).build();
+        try {
+            ProxyResponse response = blockingStubProxy.imLeader(request);
+            System.out.println("Reponse from proxy: " + response.getProxyResponse());
+        } catch (Exception e) {
+            System.out.println("Error al notificar al Proxy: " + e.getMessage());
+        } finally {
+            channelForProxy.shutdown();
+        }
+    }
+
+    /**
+     * Heartbeats
+     */
+    // to start heartbeats
+    private void startHeartbeats() {
+        if (state == NodeState.LEADER) {
+            stopHeartbeats();
+            if (heartbeatTimer != null) {
+                heartbeatTimer.cancel(false);
+            }
+            heartbeatTimer = scheduler.scheduleAtFixedRate(this::sendHeartbeat, 0, HEARTBEAT_INTERVAL,
+                    TimeUnit.MILLISECONDS);
+        }
+    }
+
+    // to stop heartbeats
+    private void stopHeartbeats() {
+        if (heartbeatTimer != null) {
+            heartbeatTimer.cancel(false);
+            System.out.println("Heartbeats detenidos");
+        }
+    }
+
+    // to send heartbeats to otherspeers through grpc
+    private void sendHeartbeat() {
+        if (state != NodeState.LEADER) {
+            stopHeartbeats();
+            return;
+        }
+        for (String peerIp : peersIps) {
+            ManagedChannel channel = ManagedChannelBuilder.forAddress(peerIp, PORT_FOR_PEERS)
+                    .usePlaintext()
+                    .build();
+            ServiceGrpc.ServiceBlockingStub blockingStub = ServiceGrpc.newBlockingStub(channel);
+            AppendEntriesRequest request = AppendEntriesRequest.newBuilder()
+                    .setTerm(currentTerm)
+                    .setLeaderIp(nodeIp)
+                    .build();
+            try {
+                AppendEntriesResponse response = blockingStub.appendEntries(request);
+                if (!response.getSuccess() && response.getTerm() > currentTerm) {
+                    becomeFollower(response.getTerm());
+                }
+            } catch (Exception e) {
+                System.out.println("Error al enviar heartbeat a " + peerIp + ": " + e.getMessage());
+            } finally {
+                channel.shutdown();
+            }
+        }
+    }
+
+    // to response request rpc heartbeats
     @Override
     public void appendEntries(AppendEntriesRequest request, StreamObserver<AppendEntriesResponse> responseObserver) {
+        int leaderTerm = request.getTerm();
         AppendEntriesResponse response;
-        if (request.getTerm() < currentTerm) {
-            response = AppendEntriesResponse.newBuilder().setTerm(currentTerm).setSuccess(false).build();
+
+        if (leaderTerm < currentTerm) {
+            response = AppendEntriesResponse.newBuilder()
+                    .setTerm(currentTerm)
+                    .setSuccess(false)
+                    .build();
+            System.out.println("heartbeat falso");
         } else {
-            if (request.getTerm() > currentTerm) {
-                currentTerm = request.getTerm();
-                state = NodeState.FOLLOWER;
-                votedFor = null;
+            if (leaderTerm > currentTerm) {
+                becomeFollower(leaderTerm);
             }
-            resetElectionTimeout();
-            response = AppendEntriesResponse.newBuilder().setTerm(currentTerm).setSuccess(true).build();
+            System.out.println("Heartbeat");
+            leaderIp = request.getLeaderIp();
+            response = AppendEntriesResponse.newBuilder()
+                    .setTerm(currentTerm)
+                    .setSuccess(true)
+                    .build();
+            resetElectionTimer();
         }
         responseObserver.onNext(response);
         responseObserver.onCompleted();
     }
 
-    // to Write in txt with grpc
+    // to close scheduler
+    public void shutdownScheduler() {
+        if (electionTimer != null) {
+            electionTimer.cancel(false);
+        }
+        scheduler.shutdown();
+    }
+
+    /**
+     * basic functions in a Data Base
+     */
+    // write in file through rpc
     @Override
     public void writeDB(RequestProxy request, StreamObserver<ResponseDB> responseObserver) {
         String data = request.getRequestProxy();
@@ -225,22 +376,10 @@ public class DataBase extends ServiceGrpc.ServiceImplBase {
         try {
             String message = "Hola Proxy, Escribir";
             System.out.println(message);
-            int portDB = 50054;
-            String ipDB = "localhost";
-            DataBase clientDB = new DataBase(ipDB, portDB, nodeId + 1, peerIds);
-            try {
-                clientDB.interDataBaseComunicationCall();
-            } catch (Exception e) {
-                e.printStackTrace();
-            } finally {
-                try {
-                    clientDB.shutdown();
-                } catch (InterruptedException e) {
-                    System.err.println("Error al cerrar el cliente: " + e.getMessage());
-                    e.printStackTrace();
-                }
-            }
-            ResponseDB response = ResponseDB.newBuilder().setResponseDB(message).build();
+            // add write in file
+            // write in followers
+            ResponseDB response = ResponseDB.newBuilder()
+                    .setResponseDB(message).build();
             responseObserver.onNext(response);
         } catch (Exception e) {
             e.printStackTrace();
@@ -250,7 +389,7 @@ public class DataBase extends ServiceGrpc.ServiceImplBase {
         }
     }
 
-    // to read from txt with grpc
+    // write in file through rpc
     @Override
     public void readDB(RequestProxy request, StreamObserver<ResponseDB> responseObserver) {
         String data = request.getRequestProxy();
@@ -258,7 +397,8 @@ public class DataBase extends ServiceGrpc.ServiceImplBase {
         try {
             String message = "Hola Proxy, Leer";
             System.out.println(message);
-            ResponseDB response = ResponseDB.newBuilder().setResponseDB(message).build();
+            ResponseDB response = ResponseDB.newBuilder()
+                    .setResponseDB(message).build();
             responseObserver.onNext(response);
         } catch (Exception e) {
             e.printStackTrace();
@@ -268,14 +408,15 @@ public class DataBase extends ServiceGrpc.ServiceImplBase {
         }
     }
 
-    // gRPC InterDatabase Comunication
+    // to call write in followers through rpc
     @Override
-    public void interDataBaseComunication(DataBaseRequest request, StreamObserver<DataBaseResponse> responseObserver) {
-        String data = request.getDbRequest();
+    public void follower(RequestLeader request, StreamObserver<ResponseFollower> responseObserver) {
+        String data = request.getLeaderRequest();
         System.out.println(data);
         try {
-            String message = "Hola database, soy otra database tambien";
-            DataBaseResponse response = DataBaseResponse.newBuilder().setDbResponse(message).build();
+            String message = "Hola Leader, Follower escribió";
+            ResponseFollower response = ResponseFollower.newBuilder()
+                    .setFollowerResponse(message).build();
             responseObserver.onNext(response);
         } catch (Exception e) {
             e.printStackTrace();
@@ -285,43 +426,43 @@ public class DataBase extends ServiceGrpc.ServiceImplBase {
         }
     }
 
-    // make grpc to other database
-    public void interDataBaseComunicationCall() {
-        String data = "Hola database, soy otra database";
-        DataBaseRequest request = DataBaseRequest.newBuilder().setDbRequest(data).build();
-        DataBaseResponse response = blockingStub.interDataBaseComunication(request);
-        System.out.println("Response from other data base: " + response.getDbResponse());
+    // to make call from leader
+    private void followerCall() {
+        for (String peerIp : peersIps) {
+            ManagedChannel channel = ManagedChannelBuilder.forAddress(peerIp, PORT_FOR_PEERS)
+                    .usePlaintext()
+                    .build();
+            ServiceGrpc.ServiceBlockingStub blockingStub = ServiceGrpc.newBlockingStub(channel);
+            String data = "Follower, escribe";
+            RequestLeader request = RequestLeader.newBuilder()
+                    .setLeaderRequest(data).build();
+            try {
+                ResponseFollower response = blockingStub.follower(request);
+                System.out.println("Response from other data base: " + response.getFollowerResponse());
+            } catch (Exception e) {
+                System.err.println("Error escribiendo en DataBase: " + peerIp);
+            } finally {
+                channel.shutdown();
+            }
+
+        }
     }
 
-    // shutdown
-    public void shutdown() throws InterruptedException {
-        channel.shutdown().awaitTermination(5, TimeUnit.SECONDS);
-    }
-
-    // main
     public static void main(String[] args) {
-        int port = 50052;
-        int portPeer = 50053;
-        List<Integer> peerIds = new ArrayList<>();
-        peerIds.add(portPeer);
-        // start server
+        DataBase dataBase = new DataBase();
         try {
-            Server db = ServerBuilder.forPort(port)
-                    .addService(new DataBase("localhost", port, 0, peerIds))
-                    .build()
-                    .start();
-            Server peer = ServerBuilder.forPort(portPeer)
-                    .addService(new DataBase("localhost", portPeer, 1, peerIds))
-                    .build()
-                    .start();
-            System.out.println("Base de datos iniciado en el puerto " + port);
-            System.out.println("Peer iniciado en el puerto " + portPeer);
-            // keep running
-            db.awaitTermination();
-            peer.awaitTermination();
+            dataBase.serverForProxy.awaitTermination();
+            dataBase.serverForPeers.awaitTermination();
         } catch (Exception e) {
             System.err.println("Error iniciando la base de datos: " + e.getMessage());
             e.printStackTrace();
+        } finally {
+            try {
+                dataBase.shutdownScheduler();
+            } catch (Exception e) {
+                System.err.println("Error al cerrar la Database: " + e.getMessage());
+                e.printStackTrace();
+            }
         }
     }
 }

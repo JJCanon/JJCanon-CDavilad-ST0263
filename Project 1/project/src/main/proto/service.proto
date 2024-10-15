@@ -11,11 +11,13 @@ service Service {
     rpc Read (RequestClient) returns (ResponseProxy) {}
     rpc WriteDB (RequestProxy) returns (ResponseDB) {}
     rpc ReadDB (RequestProxy) returns (ResponseDB) {}
-    rpc InterDataBaseComunication (DataBaseRequest) returns (DataBaseResponse) {}
-
-    //Raft
-    rpc RequestVote (VoteRequest) returns (VoteResponse){}
-    rpc AppendEntries (AppendEntriesRequest) returns (AppendEntriesResponse){}
+    rpc Follower (RequestLeader) returns (ResponseFollower) {}
+    rpc ImLeader (LeaderRequest) returns (ProxyResponse){}
+    rpc YoureLeader(ProxyRequestL) returns (DBResponseL){}
+    rpc Heartbeat(HeartbeatRequest) returns (HeartbeatResponse){}
+    // Nuevos métodos para Raft
+    rpc RequestVote (VoteRequest) returns (VoteResponse) {}
+    rpc AppendEntries (AppendEntriesRequest) returns (AppendEntriesResponse) {}
 }
 
 // Cliente - Proxy
@@ -34,32 +36,54 @@ message RequestProxy{
 message ResponseDB{
     string response_DB = 1;
 }
-//DataBase - DataBase
-message DataBaseRequest{
-    string db_request=1;
+//Database - Proxy
+message LeaderRequest {
+  string leaderRequest = 1;
 }
-message DataBaseResponse{
-    string db_response=1;
+message ProxyResponse {
+  string proxyResponse = 1;
+}
+//DataBase - DataBase
+message RequestLeader{
+    string leader_request=1;
+}
+message ResponseFollower{
+    string follower_response=1;
 }
 
-//Raft
 message VoteRequest {
-    int32 term = 1;  //Termino actual del candidato
-    int32 candidateId = 2; //ID del candidato que solicita votos
+int32 term=1;
+string candidateIp=2;
 }
 
 message VoteResponse {
-    int32 term = 1; //Termino actual del votante
-    bool voteGranted=2; //Indica si el voto fue otorgado
+    int32 term=2;
+    bool voteGranted=3;
 }
 
-// Mensajes para la replicacion de raft
 message AppendEntriesRequest {
-    int32 term = 1; //Termino del leader
-    int32 leaderId = 2; //ID del leader
+    int32 term = 1;
+    string leaderIp = 2;
 }
 
 message AppendEntriesResponse {
-    int32 term = 1; //Termino actual del seguidor
-    bool success = 2; //Indica si la replicacion fue exitosa
+    int32 term = 1;
+    bool success = 2;
+}
+
+
+message ProxyRequestL {
+    string requestToLeader=1;
+    bool leader=2;
+}
+message DBResponseL {
+    string dbResponseL=1;
+}
+
+message HeartbeatRequest {
+    string beat=1;
+}
+
+message HeartbeatResponse{
+    bool beat=1;
 }

@@ -2,6 +2,23 @@ Languaje: Java
 
 compile project: mvn clean install
 
-run client: mvn exec:java -Dexec.mainClass="com.project.Client"
-run proxy: mvn exec:java -Dexec.mainClass="com.project.ProxyServer"
 run database: mvn exec:java -Dexec.mainClass="com.project.DataBase"
+run proxy: mvn exec:java -Dexec.mainClass="com.project.ProxyServer"
+run client: mvn exec:java -Dexec.mainClass="com.project.Client"
+
+
+migrar carpeta: scp -r -i /ruta/a/tu/clave.pem /ruta/de/tu/carpeta usuario@direccion_ip:/ruta/de/destino/en/instancia
+proxy: scp -r -i project.pem project ubuntu@52.22.91.81:~/
+DataBase 1: scp -r -i project.pem project ubuntu@23.23.66.104:~/
+DataBase 2: scp -r -i project.pem project ubuntu@34.231.49.169:~/
+
+puntual file
+Proxy: scp -i project.pem project/src/main/java/com/project/ProxyServer.java ubuntu@52.22.91.81:~/project/src/main/java/com/project/
+        scp -i project.pem project/src/main/java/com/project/ProxyServer2.java ubuntu@52.22.91.81:~/project/src/main/java/com/project/
+
+DataBase 1: scp -i project.pem project/src/main/java/com/project/DataBase.java ubuntu@23.23.66.104:~/project/src/main/java/com/project/
+DataBase 2: scp -i project.pem project/src/main/java/com/project/DataBase.java ubuntu@34.231.49.169:~/project/src/main/java/com/project/
+
+DataBase 1: scp -i project.pem project/src/main/java/com/project/DataBase2.java ubuntu@23.23.66.104:~/project/src/main/java/com/project/
+DataBase 2: scp -i project.pem project/src/main/java/com/project/DataBase2.java ubuntu@34.231.49.169:~/project/src/main/java/com/project/
+scp -i project.pem ubuntu@52.22.91.81:~/project/src/main/java/com/project/ProxyServer.java project

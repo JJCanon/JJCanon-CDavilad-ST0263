@@ -14,6 +14,8 @@ public class Client {
     private final ManagedChannel channel;
     private final ServiceGrpc.ServiceBlockingStub blockingStub;
 
+    private static final int PORT_TO_PROXY = 50060;
+
     // Constructor
     public Client(String host, int port) {
         channel = ManagedChannelBuilder.forAddress(host, port)
@@ -46,7 +48,8 @@ public class Client {
         System.out.println("Iniciando cliente...");
 
         String ipProxy = "localhost";
-        int port = 50051;
+
+        int port = PORT_TO_PROXY;
         Client client = new Client(ipProxy, port);
         Scanner scanner = new Scanner(System.in);
         try {

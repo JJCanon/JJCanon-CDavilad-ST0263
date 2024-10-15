@@ -1,0 +1,44 @@
+version: '3'
+
+services:
+  database1:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "50052:50052"
+      - "50053:50053"
+    environment:
+      - NODE_ID=0
+      - PEER_IDS=1,2
+      - HOST=database1
+      - PORT=50052
+      - PEER_PORTS=50054,50056
+
+  database2:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "50054:50054"
+      - "50055:50055"
+    environment:
+      - NODE_ID=1
+      - PEER_IDS=0,2
+      - HOST=database2
+      - PORT=50054
+      - PEER_PORTS=50052,50056
+
+  database3:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "50056:50056"
+      - "50057:50057"
+    environment:
+      - NODE_ID=2
+      - PEER_IDS=0,1
+      - HOST=database3
+      - PORT=50056
+      - PEER_PORTS=50052,50054

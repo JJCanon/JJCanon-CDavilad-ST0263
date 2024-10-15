@@ -1,4 +1,3 @@
-package com.project;
 
 //server
 import io.grpc.Server;
@@ -26,13 +25,12 @@ public class ProxyServer extends ServiceGrpc.ServiceImplBase {
     private ManagedChannel channel1, channel2, channel3;
     private ServiceGrpc.ServiceBlockingStub blockingStub1, blockingStub2, blockingStub3;
 
-    private final String[] ipsDatabases1 = { "167.0.183.98", "23.23.66.104", "34.231.49.169" };
-    private final String[] ipsDatabases = { "localhost", "localhost", "localhost" };
+    private final String[] ipsDatabases = { "167.0.183.98", "23.23.66.104", "34.231.49.169" };
     private String leaderIp;
 
     private static final int PORT_FOR_CLIENT = 50060;
     private static final int PORT_TO_DB = 50061;
-    private static final int PORT_FOR_DB = 50064;
+    private static final int PORT_FOR_DB = 50062;
 
     // constructor
     public ProxyServer() {
@@ -41,13 +39,13 @@ public class ProxyServer extends ServiceGrpc.ServiceImplBase {
         initializeStubs();
         try {
             start();
-            System.out.println("esperando lider");
             proxy.awaitTermination();
             proxyDB.awaitTermination();
         } catch (Exception e) {
             System.err.println("Error iniciando a escuchar el proxy: " + e.getMessage());
             e.printStackTrace();
         }
+        System.out.println("esperando lider");
         while (leaderIp == "") {
         }
         System.out.println("Lider asignado");
@@ -67,10 +65,10 @@ public class ProxyServer extends ServiceGrpc.ServiceImplBase {
         this.channel1 = ManagedChannelBuilder.forAddress(ipsDatabases[0], PORT_TO_DB)
                 .usePlaintext()
                 .build();
-        this.channel2 = ManagedChannelBuilder.forAddress(ipsDatabases[1], PORT_TO_DB + 1)
+        this.channel2 = ManagedChannelBuilder.forAddress(ipsDatabases[1], PORT_TO_DB + 3)
                 .usePlaintext()
                 .build();
-        this.channel3 = ManagedChannelBuilder.forAddress(ipsDatabases[2], PORT_TO_DB + 3)
+        this.channel3 = ManagedChannelBuilder.forAddress(ipsDatabases[2], PORT_TO_DB + 4)
                 .usePlaintext()
                 .build();
         this.blockingStub1 = ServiceGrpc.newBlockingStub(this.channel1);
@@ -144,6 +142,7 @@ public class ProxyServer extends ServiceGrpc.ServiceImplBase {
             // to finish conection
             responseObserver.onCompleted();
         }
+
     }
 
     /**
