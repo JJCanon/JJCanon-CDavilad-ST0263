@@ -222,11 +222,13 @@ docker-compose up -d
 12.1 Nos dirigimos a Route 53 de AWS y creamos una zona alojada, en nombre de dominio colocamos el nombre de nuestro dominio, agregamos una descripción (opcional) y seleccionamos zona alojada publica y creamos pulsamos "crear zona"
 
 debe aparecer algo mas o menos así:
-![alt text](image.png)
+![image](https://github.com/user-attachments/assets/8c36085b-f994-4771-a3da-9d137d0334f5)
+
 
 12.2 nos dirigimos a nuestro server de dominio, en mi caso godaddy y en configuraciones dns, cambiamos los servidores de valores de tipo ns que nos da el route 53
 en mi caso, estos:
-![alt text](image-1.png)
+![image](https://github.com/user-attachments/assets/28543ba7-fe34-4e3d-94c5-913ee1328e5b)
+
 
 12.3 Buscamos la herramienta de AWS de Certificate Manager y pulsamos en solicitar, agregamos el nombre del dominio en mi caso `freefree.digital` y `www.freefree.digital`, en metodo de validación, seleccionamos `Validacion por DNS` y seleccionamos como algoritmo clave `RSA 2048` pulsamos solicitar y esperamos a que nos aparezca el certificado sin validar, una vez validado simplemete pusamos en crear registros en Route 53 y seleccionamos nuestro dominio configurado, crear. esperamos unos momentos que actualice y nos dará la certificacion emitida.
 
@@ -268,20 +270,12 @@ una vez creado, verificamos que aparezca activo y pulsamos en agregar agente que
 
 ### 14. Apuntamos en Route 53 con registro tipo A con alias hacia el balanceador de carga
 debe quedar de la siguiente manera:
-![alt text](image-2.png)
+![image](https://github.com/user-attachments/assets/450eeedf-5a78-4497-90d7-1616ecddcb32)
+
 pulsamos crear registros y esperamos un momento que actualice
 
 ### 15. una vez implementado todo eso, se sigue a partir de los pasos 9 del laboratorio y finalmente busca la pagína con el dominio en el buscador.
 
-
-
-
-
-
-
-
-
-
-```bash
-
-``` 
+# al final buscando el dominio muestra lo siguiente:
+![image](https://github.com/user-attachments/assets/ed76a026-0653-47e5-9750-1e5cea20011a)
+ 
