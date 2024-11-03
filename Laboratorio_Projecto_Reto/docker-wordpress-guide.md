@@ -185,11 +185,13 @@ define('FORCE_SSL_LOGIN', true);
 1. **Route 53**:
    - Crear zona alojada
    - Configurar registros NS en el proveedor de dominio
-   
+   ![image](https://github.com/user-attachments/assets/dd4d9ca2-fcd1-4dc0-aeb6-fc5ba705d053)
+
 2. **Certificate Manager**:
    - Solicitar certificado
    - Validar dominio
    - Crear registros DNS
+   - 
 
 ## 🔄 Configuración del Balanceador de Carga
 
@@ -216,6 +218,8 @@ define('FORCE_SSL_LOGIN', true);
 - Crear registro tipo A en Route 53
 - Alias hacia el balanceador de carga
 - Verificar la propagación DNS
+- ![image](https://github.com/user-attachments/assets/a808e734-4983-4421-bf0f-8b013f45eec7)
+
 
 ## 📌 Notas Finales
 - Continuar con el paso 9 del laboratorio original
