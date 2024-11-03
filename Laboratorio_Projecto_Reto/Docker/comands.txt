@@ -1,0 +1,58 @@
+#archivo health.html
+touch health.html
+
+#Descargar wordpress
+curl -O https://wordpress.org/latest.tar.gz
+tar xzvf latest.tar.gz
+mv wordpress html
+
+# Crea el archivo wp-config.php
+cp html/wp-config-sample.php html/wp-config.php
+
+
+# Modifica el wp-config.php con tus credenciales de base de datos
+sed -i 's/database_name_here/wordpress/' html/wp-config.php
+sed -i 's/username_here/wpuser/' html/wp-config.php
+sed -i 's/password_here/wppassword/' html/wp-config.php
+sed -i 's/localhost/172.16.3.196/' html/wp-config.php
+
+#iniciar los contenedores
+docker-compose up -d --build
+
+
+# Ver el estado del contenedor
+docker ps
+
+# Ver los logs del contenedor
+docker logs wordpress-docker_wordpress_1
+
+# Verificar que el servicio está respondiendo
+curl localhost:80/health.html
+
+# Habilitar el servicio Docker para que inicie con el sistema
+sudo systemctl enable docker
+
+# Verificar el estado
+sudo systemctl status docker
+
+
+HTTPS
+
+*Añadir al wp-config.php
+
+/* Configuración SSL */
+define('FORCE_SSL_ADMIN', true);
+if (strpos($_SERVER['HTTP_X_FORWARDED_PROTO'], 'https') !== false)
+    $_SERVER['HTTPS']='on';
+
+/* Define el dominio del sitio */
+define('WP_HOME','https://www.freefree.digital');
+define('WP_SITEURL','https://www.freefree.digital');
+
+/* Forzar HTTPS en WordPress */
+define('FORCE_SSL_ADMIN', true);
+define('FORCE_SSL_LOGIN', true);
+
+# Reconstruir el contenedor
+docker-compose down
+docker-compose up -d

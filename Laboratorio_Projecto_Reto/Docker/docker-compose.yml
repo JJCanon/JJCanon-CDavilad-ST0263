@@ -1,0 +1,22 @@
+# docker-compose.yml
+version: '3'
+
+services:
+  wordpress:
+    build: .
+    ports:
+      - "80:80"
+    volumes:
+      - ./wordpress:/var/www/html
+      - ./php.ini:/usr/local/etc/php/conf.d/php.ini
+    environment:
+      WORDPRESS_DB_HOST: 172.16.3.196
+      WORDPRESS_DB_NAME: wordpress
+      WORDPRESS_DB_USER: wpuser
+      WORDPRESS_DB_PASSWORD: wppassword
+    restart: always
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost/health.html" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
