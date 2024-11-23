@@ -1,12 +1,6 @@
 import mongoose from 'mongoose';
 
-// Actualizamos el nombre de la colección a tb_books
 const bookSchema = mongoose.Schema({
-    id: {
-        type: String,
-        required: true,
-        unique: true
-    },
     author: {
         type: String,
         required: true
@@ -33,8 +27,8 @@ const bookSchema = mongoose.Schema({
     }
 }, {
     timestamps: true,
-    collection: 'tb_books' // Especificamos el nombre exacto de la colección
+    collection: 'books' // Nombre exacto de la colección
 });
 
-const Book = mongoose.model('Book', bookSchema, 'tb_books');
+const Book = mongoose.model('Book', bookSchema, 'books');
 export default Book;
