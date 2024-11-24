@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: frontend-config
+data:
+  PROXY_PASS: "http://backend-service:5001/api/models"
+  NGINX_PORT: "80"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backend-config
+data:
+  NODE_ENV: "development"
+  PORT: "5001"

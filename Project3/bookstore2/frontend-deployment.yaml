@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+      - name: frontend
+        image: frontend:latest
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 80
+        env:
+        - name: PROXY_PASS
+          valueFrom:
+            configMapKeyRef:
+              name: frontend-config
+              key: PROXY_PASS
+        - name: NGINX_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: frontend-config
+              key: NGINX_PORT
+        resources:
+          limits:
+            cpu: "300m"
+            memory: "256Mi"
+          requests:
+            cpu: "100m"
+            memory: "128Mi"

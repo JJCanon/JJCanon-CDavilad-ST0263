@@ -1,0 +1,40 @@
+services:
+  frontend:
+    build: ./frontend
+    container_name: models_frontend
+    ports:
+      - "80:80"
+    #restart: always
+    env_file:
+      - "./frontend/.env"
+    networks:
+      - front-tier
+      - back-tier
+    depends_on:
+      - backend
+
+  backend:
+    build: ./backend
+    container_name: models_backend
+    ports:
+      - "5001:5001"
+    #restart: always
+    env_file:
+      - "./backend/.env"
+    environment:
+      - MONGODB_URI=mongodb+srv://topicos:telematica2024@project3.czhst.mongodb.net/tb-books?retryWrites=true&w=majority
+      - NODE_ENV=development
+      - PORT=5001
+    networks:
+      - front-tier
+      - back-tier
+    # Añadimos healthcheck para asegurar que el backend está funcionando
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:5001" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+networks:
+  front-tier:
+  back-tier:
