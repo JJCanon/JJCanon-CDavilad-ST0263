@@ -1,0 +1,41 @@
+mkdir backend frontend
+sudo tar -xvf backend.tar -C backend
+sudo tar -xvf frontend.tar -C frontend/
+sudo tar -xvf microk8s.tar
+sudo rm frontend.tar backend.tar microk8s.tar
+sudo apt update && sudo apt upgrade -y
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+sudo apt update
+sudo apt install -y docker-ce docker-ce-cli containerd.io
+sudo systemctl enable docker
+sudo systemctl start docker
+sudo docker --version
+sudo apt install -y snapd
+sudo snap install microk8s --classic
+sudo microk8s status --wait-ready
+sudo usermod -a -G microk8s $USER
+newgrp microk8s
+sudo docker build -t frontend:latest ./frontend
+sudo docker build -t backend:latest ./backend
+sudo docker images
+sudo docker save backend:latest > backend.tar
+sudo docker save frontend:latest > frontend.tar
+sudo microk8s ctr image import backend.tar
+sudo microk8s ctr image import frontend.tar
+sudo microk8s ctr images ls
+sudo microk8s enable registry
+sudo microk8s enable ingress
+sudo microk8s kubectl apply -f configmap.yaml
+sudo microk8s kubectl apply -f secret.yaml
+sudo microk8s kubectl apply -f backend-deployment.yaml
+sudo microk8s kubectl apply -f backend-service.yaml
+sudo microk8s kubectl apply -f frontend-deployment.yaml
+sudo microk8s kubectl apply -f frontend-service.yaml
+sudo microk8s kubectl apply -f ingress.yaml
+sudo microk8s kubectl get configmaps
+sudo microk8s kubectl get secrets
+sudo microk8s kubectl get deployments
+sudo microk8s kubectl get pods
+sudo microk8s kubectl get services
+sudo microk8s kubectl get ingress
